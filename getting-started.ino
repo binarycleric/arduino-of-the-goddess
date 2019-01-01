@@ -1,3 +1,4 @@
+#define NOTE_REST 0
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -88,37 +89,30 @@
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
-
-
-
-
-
 int melody[] = {
-  0, NOTE_D3, 
+  NOTE_REST, NOTE_D3, 
   NOTE_E3, NOTE_F3, NOTE_G3, NOTE_C4, 
   NOTE_D4, NOTE_G3, NOTE_E3,
   NOTE_D3, NOTE_G3, NOTE_E3, 
-  NOTE_D3, NOTE_C3, NOTE_D3, 0, NOTE_G3, NOTE_E3,
+  NOTE_D3, NOTE_C3, NOTE_D3, NOTE_REST, NOTE_G3, NOTE_E3,
 
-  // Next.
-  0, NOTE_D3, 
+  NOTE_REST, NOTE_D3, 
   NOTE_E3, NOTE_F3, NOTE_G3, NOTE_C4, 
   NOTE_D4, NOTE_G3, NOTE_E3,
   NOTE_D3, NOTE_G3, NOTE_E3, 
-  NOTE_D3, NOTE_C3, NOTE_D3, 0, NOTE_G3, NOTE_E3,
+  NOTE_D3, NOTE_C3, NOTE_D3, NOTE_REST, NOTE_G3, NOTE_E3,
 
-  // Next.
-  NOTE_A3, NOTE_A3, NOTE_G3, NOTE_F3, 0,
+  NOTE_A3, NOTE_A3, NOTE_G3, NOTE_F3, NOTE_REST,
   NOTE_F3, NOTE_E3, NOTE_D3, NOTE_G3, 
   NOTE_E3, NOTE_C3,
   NOTE_D3, NOTE_D3, NOTE_D3, NOTE_E3,
-  NOTE_CS2, NOTE_G1,
-  NOTE_A3, NOTE_A3, NOTE_G3, NOTE_F3, 0,
+  NOTE_CS2, NOTE_G1, NOTE_REST,
+  NOTE_A3, NOTE_A3, NOTE_G3, NOTE_F3, NOTE_REST,
 
   NOTE_F3, NOTE_E3, NOTE_D3, NOTE_G3,
   NOTE_E3, NOTE_C3,
   NOTE_D3, NOTE_D3, NOTE_D3, NOTE_E3,
-  NOTE_CS2, NOTE_G1,
+  NOTE_CS2, NOTE_G1, NOTE_REST,
   NOTE_A3,
 };
 
@@ -129,34 +123,30 @@ int noteDurations[] = {
   2, 4, 4, 
   8, 8, 8, 8, 4, 4,
 
-  // Next.
   4, 3, 
   8, 8, 2, 4, 
   2, 4, 4,
   2, 4, 4, 
   8, 8, 8, 8, 4, 4,
 
-  // Next.
   2, 8, 8, 8, 8,
   4, 4, 4, 4,
   4, 3,
   4, 4, 4, 4,
-  2, 2,
+  4, 4, 2,
   2, 8, 8, 8, 8,
 
   4, 4, 4, 4,
   4, 3,
   4, 4, 4, 4,
-  2, 2,
+  4, 4, 2,
   1
 };
 
-void setup() {
+void playForwards() {
   int totalNotes = sizeof(noteDurations) / sizeof(int);
-  
-  // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote < totalNotes; thisNote++) {
 
+  for (int thisNote = 0; thisNote < totalNotes; thisNote++) {
     // to calculate the note duration, take one second divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
     int noteDuration = 1000 / noteDurations[thisNote];
@@ -169,6 +159,29 @@ void setup() {
     // stop the tone playing:
     noTone(8);
   }
+}
+
+void playBackwards() {
+  int totalNotes = sizeof(noteDurations) / sizeof(int);
+  
+  for (int thisNote = 1; thisNote < totalNotes; thisNote++) {
+    int inverse = totalNotes - thisNote;
+
+    // int noteDuration = 1000;
+    int noteDuration = 1000 / noteDurations[inverse];
+    tone(8,  melody[inverse], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    noTone(8);
+  }  
+}
+
+void setup() {
+  playForwards();
 }
 
 void loop() {
