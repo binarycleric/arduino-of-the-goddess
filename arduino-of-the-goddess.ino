@@ -59,6 +59,16 @@ struct playButton {
   int state;
 };
 
+struct indicatorLED {
+  int rPin;
+  int gPin;
+  int bPin;
+};
+
+indicatorLED playbackLED = {
+  11, 12, 13
+};
+
 playButton forwardButton = {
   2, 0
 };
@@ -70,12 +80,53 @@ playButton backwardButton = {
 void setup() {
   pinMode(forwardButton.pin, INPUT);
   pinMode(backwardButton.pin, INPUT);
+
+  pinMode(playbackLED.rPin, OUTPUT);
+  pinMode(playbackLED.gPin, OUTPUT);
+  pinMode(playbackLED.bPin, OUTPUT);
+
+}
+
+void playbackLEDWhite() {
+  analogWrite(playbackLED.rPin, 255);
+  analogWrite(playbackLED.gPin, 255);
+  analogWrite(playbackLED.bPin, 255);      
+}
+
+void playbackLEDGreen() {
+  analogWrite(playbackLED.rPin, 0);
+  analogWrite(playbackLED.gPin, 255);
+  analogWrite(playbackLED.bPin, 0);    
+}
+
+void playbackLEDBlue() {
+  analogWrite(playbackLED.rPin, 0);
+  analogWrite(playbackLED.gPin, 0);
+  analogWrite(playbackLED.bPin, 255);  
+}
+
+void playbackLEDRed() {
+  analogWrite(playbackLED.rPin, 255);
+  analogWrite(playbackLED.gPin, 0);
+  analogWrite(playbackLED.bPin, 0);  
+}
+
+void blinkLEDBlueWhite() {
+  playbackLEDWhite();
+  delay(500);
+  playbackLEDBlue();
+  delay(500);
+  
 }
 
 void loop() {
+  playbackLEDWhite();
+  // blinkLEDBlueWhite();
+  
   if ( digitalRead(forwardButton.pin) == HIGH ) {
     int totalNotes = sizeof(beats) / sizeof(int);    
 
+    playbackLEDGreen();
     playMelody(melody, beats, totalNotes);
   } else if ( digitalRead(backwardButton.pin) == HIGH ) {
     int totalNotes = sizeof(beats) / sizeof(int);    
@@ -87,7 +138,8 @@ void loop() {
       reversedMelody[i] = melody[(totalNotes - 1) - i];
       reversedBeats[i] = beats[(totalNotes - 1) - i];
     }
-    
+
+    playbackLEDRed();
     playMelody(reversedMelody, reversedBeats, totalNotes);
   }
 }
