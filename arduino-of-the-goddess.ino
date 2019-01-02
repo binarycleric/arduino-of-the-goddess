@@ -54,13 +54,32 @@ int beats[] = {
   1
 };
 
+struct playButton {
+  int pin;
+  int state;
+};
+
+playButton forwardButton = {
+  2, 0
+};
+
+playButton backwardButton = {
+  4, 0
+};
+
 void setup() {
-  pinMode(13, OUTPUT);
-  pinMode(12, OUTPUT);
+  pinMode(forwardButton.pin, INPUT);
+  pinMode(backwardButton.pin, INPUT);
+}
 
-  int totalNotes = sizeof(beats) / sizeof(int);
+void loop() {
+  if ( digitalRead(forwardButton.pin) == HIGH ) {
+    int totalNotes = sizeof(beats) / sizeof(int);    
 
-  if (false) {
+    playMelody(melody, beats, totalNotes);
+  } else if ( digitalRead(backwardButton.pin) == HIGH ) {
+    int totalNotes = sizeof(beats) / sizeof(int);    
+
     int reversedMelody[totalNotes];
     int reversedBeats[totalNotes];
 
@@ -70,37 +89,29 @@ void setup() {
     }
     
     playMelody(reversedMelody, reversedBeats, totalNotes);
-  } else {
-    playMelody(melody, beats, totalNotes);
   }
 }
 
-void loop() {
+int beatDuration(int beat) {
+  return 1000 / beat;
 }
 
 void playMelody(int notes[], int beats[], int totalNotes) {
   for (int thisNote = 0; thisNote < totalNotes; thisNote++) {
     // to calculate the note duration, take one second divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000 / beats[thisNote];
+    // e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    // int noteDuration = 1000 / beats[thisNote];
+
+    int noteDuration = beatDuration(beats[thisNote]);
 
     tone(8, notes[thisNote], noteDuration);
-
-    if (melody[thisNote] <= NOTE_E4) {
-      digitalWrite(13, HIGH);      
-    } else {
-      digitalWrite(12, HIGH);    
-    }
 
     // to distinguish the notes, set a minimum time between them.
     // the note's duration + 30% seems to work well:
     int pauseBetweenNotes = noteDuration * 1.30;
     
     delay(pauseBetweenNotes);
-
-    digitalWrite(13, LOW);
-    digitalWrite(12, LOW);
-    
+   
     // stop the tone playing:
     noTone(8);
   }
