@@ -77,6 +77,10 @@ playButton backwardButton = {
   4, 0
 };
 
+int currentNote = 0;
+int currentBeat = 0;
+bool play = false;
+
 void setup() {
   pinMode(forwardButton.pin, INPUT);
   pinMode(backwardButton.pin, INPUT);
@@ -84,7 +88,14 @@ void setup() {
   pinMode(playbackLED.rPin, OUTPUT);
   pinMode(playbackLED.gPin, OUTPUT);
   pinMode(playbackLED.bPin, OUTPUT);
+}
 
+void loop() {
+  playbackLEDWhite();
+  // blinkLEDBlueWhite();
+
+  // playSingleBeat();
+  playWholeMelody();
 }
 
 void playbackLEDWhite() {
@@ -115,14 +126,40 @@ void blinkLEDBlueWhite() {
   playbackLEDWhite();
   delay(500);
   playbackLEDBlue();
-  delay(500);
-  
+  delay(500); 
 }
 
-void loop() {
-  playbackLEDWhite();
-  // blinkLEDBlueWhite();
-  
+void playSingleBeat() {
+  int totalNotes = sizeof(beats) / sizeof(int);    
+
+  if ( digitalRead(forwardButton.pin) == HIGH ) {
+    playNote(melody[currentNote], beats[currentNote]);
+
+    currentNote++;
+    currentBeat++;
+
+    if ( currentNote > ( totalNotes - 1) )
+      currentNote = 0;
+
+    if (currentBeat > ( totalNotes  - 1 ) )
+      currentBeat = 0;
+  }
+
+  if ( digitalRead(backwardButton.pin) == HIGH  ) {
+    playNote(melody[currentNote], beats[currentNote]); 
+    
+    currentNote--;
+    currentBeat--;
+    
+    if ( currentNote < 0 )
+      currentNote = (totalNotes - 1);
+
+    if ( currentBeat < 0 )
+      currentBeat = (totalNotes - 1);
+  }  
+}
+
+void playWholeMelody() {
   if ( digitalRead(forwardButton.pin) == HIGH ) {
     int totalNotes = sizeof(beats) / sizeof(int);    
 
@@ -141,30 +178,22 @@ void loop() {
 
     playbackLEDRed();
     playMelody(reversedMelody, reversedBeats, totalNotes);
-  }
+  }  
 }
 
-int beatDuration(int beat) {
-  return 1000 / beat;
+void playNote(int note, int beat) {
+  int noteDuration = 1000 / beat;
+  int pauseBetweenNotes = noteDuration * 1.30;
+  
+  tone(8, note, noteDuration);
+  delay(pauseBetweenNotes);
+   
+  // stop the tone playing:
+  noTone(8); 
 }
 
 void playMelody(int notes[], int beats[], int totalNotes) {
   for (int thisNote = 0; thisNote < totalNotes; thisNote++) {
-    // to calculate the note duration, take one second divided by the note type.
-    // e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    // int noteDuration = 1000 / beats[thisNote];
-
-    int noteDuration = beatDuration(beats[thisNote]);
-
-    tone(8, notes[thisNote], noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = noteDuration * 1.30;
-    
-    delay(pauseBetweenNotes);
-   
-    // stop the tone playing:
-    noTone(8);
+    playNote(notes[thisNote], beats[thisNote]);
   }
 }
