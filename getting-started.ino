@@ -143,6 +143,21 @@ int noteDurations[] = {
   1
 };
 
+
+
+
+
+void setup() {
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
+}
+
+void loop() {
+  // playForwards();
+  // playBackwards();
+}
+
+
 void playForwards() {
   int totalNotes = sizeof(noteDurations) / sizeof(int);
 
@@ -150,12 +165,25 @@ void playForwards() {
     // to calculate the note duration, take one second divided by the note type.
     //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
     int noteDuration = 1000 / noteDurations[thisNote];
+
     tone(8, melody[thisNote], noteDuration);
+
+    if (melody[thisNote] <= NOTE_E3) {
+      digitalWrite(13, HIGH);      
+    } else {
+      digitalWrite(12, HIGH);    
+    }
 
     // to distinguish the notes, set a minimum time between them.
     // the note's duration + 30% seems to work well:
     int pauseBetweenNotes = noteDuration * 1.30;
+    
     delay(pauseBetweenNotes);
+
+    digitalWrite(13, LOW);
+    digitalWrite(12, LOW);
+
+    
     // stop the tone playing:
     noTone(8);
   }
@@ -178,11 +206,4 @@ void playBackwards() {
     // stop the tone playing:
     noTone(8);
   }  
-}
-
-void setup() {
-  playForwards();
-}
-
-void loop() {
 }
