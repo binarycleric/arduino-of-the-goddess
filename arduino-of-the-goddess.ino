@@ -59,7 +59,20 @@ void setup() {
   pinMode(12, OUTPUT);
 
   int totalNotes = sizeof(beats) / sizeof(int);
-  playMelody(melody, beats, totalNotes);
+
+  if (false) {
+    int reversedMelody[totalNotes];
+    int reversedBeats[totalNotes];
+
+    for (int i = 0; i < totalNotes; i++) {
+      reversedMelody[i] = melody[(totalNotes - 1) - i];
+      reversedBeats[i] = beats[(totalNotes - 1) - i];
+    }
+    
+    playMelody(reversedMelody, reversedBeats, totalNotes);
+  } else {
+    playMelody(melody, beats, totalNotes);
+  }
 }
 
 void loop() {
@@ -73,7 +86,7 @@ void playMelody(int notes[], int beats[], int totalNotes) {
 
     tone(8, notes[thisNote], noteDuration);
 
-    if (melody[thisNote] <= NOTE_E3) {
+    if (melody[thisNote] <= NOTE_E4) {
       digitalWrite(13, HIGH);      
     } else {
       digitalWrite(12, HIGH);    
