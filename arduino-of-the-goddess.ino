@@ -1,6 +1,6 @@
 #include "notes.h"
 
-int melody[] = { 
+int melody[] = {
   NOTE_REST, NOTE_D4, 
   NOTE_E4, NOTE_F4, NOTE_G4, NOTE_C5, 
   NOTE_D5, NOTE_G4, NOTE_E4,
@@ -17,13 +17,13 @@ int melody[] = {
   NOTE_F4, NOTE_E4, NOTE_D4, NOTE_G4, 
   NOTE_E4, NOTE_C4,
   NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4,
-  NOTE_B3, NOTE_A3,
+  NOTE_CS4, NOTE_B3,
   NOTE_A4, NOTE_A4, NOTE_G4, NOTE_F4, NOTE_REST,
 
   NOTE_F4, NOTE_E4, NOTE_D4, NOTE_G4,
   NOTE_E4, NOTE_C4,
   NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4,
-  NOTE_B3, NOTE_A3,
+  NOTE_CS4, NOTE_B3,
   NOTE_A4,
 };
 
@@ -91,12 +91,41 @@ void setup() {
 }
 
 void loop() {
-  playbackLEDWhite();
-  // blinkLEDBlueWhite();
-
+  // playbackLEDRed();
   // playSingleBeat();
-  playWholeMelody();
+  // playWholeMelody();
+
+
+  if ( digitalRead(forwardButton.pin) == HIGH ) {
+    play = true;
+    playbackLEDGreen();
+  } else if ( digitalRead(backwardButton.pin) == HIGH ) {
+    play = false;
+    playbackLEDRed();    
+  } else {
+    playbackLEDRed();
+  }
+
+  if ( play == true ) {
+    int totalNotes = sizeof(beats) / sizeof(int);    
+
+    playbackLEDGreen();
+    playNote(melody[currentNote], beats[currentNote]);
+  
+    currentNote++;
+    currentBeat++;
+  
+    if ( currentNote > ( totalNotes - 1) )
+      currentNote = 0;
+  
+    if (currentBeat > ( totalNotes  - 1 ) )
+      currentBeat = 0;
+  }  
 }
+
+
+
+
 
 void playbackLEDWhite() {
   analogWrite(playbackLED.rPin, 255);
@@ -120,13 +149,6 @@ void playbackLEDRed() {
   analogWrite(playbackLED.rPin, 255);
   analogWrite(playbackLED.gPin, 0);
   analogWrite(playbackLED.bPin, 0);  
-}
-
-void blinkLEDBlueWhite() {
-  playbackLEDWhite();
-  delay(500);
-  playbackLEDBlue();
-  delay(500); 
 }
 
 void playSingleBeat() {
@@ -176,7 +198,7 @@ void playWholeMelody() {
       reversedBeats[i] = beats[(totalNotes - 1) - i];
     }
 
-    playbackLEDRed();
+    playbackLEDBlue();
     playMelody(reversedMelody, reversedBeats, totalNotes);
   }  
 }
@@ -187,8 +209,6 @@ void playNote(int note, int beat) {
   
   tone(8, note, noteDuration);
   delay(pauseBetweenNotes);
-   
-  // stop the tone playing:
   noTone(8); 
 }
 
