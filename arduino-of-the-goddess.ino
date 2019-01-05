@@ -1,58 +1,144 @@
 #include "notes.h"
 
-int melody[] = {
-  NOTE_REST, NOTE_D4, 
-  NOTE_E4, NOTE_F4, NOTE_G4, NOTE_C5, 
-  NOTE_D5, NOTE_G4, NOTE_E4,
-  NOTE_D4, NOTE_G4, NOTE_E4, 
-  NOTE_D4, NOTE_C4, NOTE_D4, NOTE_REST, NOTE_G4, NOTE_E4,
+#define WHOLE_NOTE     1
+#define HALF_NOTE      2
+#define QUARTER_NOTE   4
+#define EIGHTH_NOTE    8
 
-  NOTE_REST, NOTE_D4, 
-  NOTE_E4, NOTE_F4, NOTE_G4, NOTE_C5, 
-  NOTE_D5, NOTE_G4, NOTE_E4,
-  NOTE_D4, NOTE_G4, NOTE_E4, 
-  NOTE_D4, NOTE_C4, NOTE_D4, NOTE_REST, NOTE_G4, NOTE_E4,
-
-  NOTE_A4, NOTE_A4, NOTE_G4, NOTE_F4, NOTE_REST,
-  NOTE_F4, NOTE_E4, NOTE_D4, NOTE_G4, 
-  NOTE_E4, NOTE_C4,
-  NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4,
-  NOTE_CS4, NOTE_B3,
-  NOTE_A4, NOTE_A4, NOTE_G4, NOTE_F4, NOTE_REST,
-
-  NOTE_F4, NOTE_E4, NOTE_D4, NOTE_G4,
-  NOTE_E4, NOTE_C4,
-  NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4,
-  NOTE_CS4, NOTE_B3,
-  NOTE_A4,
+struct beat {
+  int note;
+  int duration;
 };
 
-int beats[] = {
-  4, 3, 
-  8, 8, 2, 4, 
-  2, 4, 4,
-  2, 4, 4, 
-  8, 8, 8, 8, 4, 4,
+beat melody[] = {
+  { NOTE_REST, QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE },
+  { NOTE_D4,   QUARTER_NOTE },
+  
+  { NOTE_E4, EIGHTH_NOTE },
+  { NOTE_F4, EIGHTH_NOTE },
+  { NOTE_G4, HALF_NOTE },
+  { NOTE_C5, QUARTER_NOTE },
 
-  4, 3, 
-  8, 8, 2, 4, 
-  2, 4, 4,
-  2, 4, 4, 
-  8, 8, 8, 8, 4, 4,
+  { NOTE_D5, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
 
-  2, 8, 8, 8, 8,
-  4, 4, 4, 4,
-  4, 3,
-  4, 4, 4, 4,
-  2, 2,
-  2, 8, 8, 8, 8,
+  { NOTE_D4, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
 
-  4, 4, 4, 4,
-  4, 3,
-  4, 4, 4, 4,
-  2, 2,
-  1
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_C4,   EIGHTH_NOTE },
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_REST, EIGHTH_NOTE },
+  { NOTE_G4,   QUARTER_NOTE },
+  { NOTE_E4,   QUARTER_NOTE },
+
+  // Second stanza
+  { NOTE_REST, QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE },
+  { NOTE_D4,   QUARTER_NOTE },
+  
+  { NOTE_E4, EIGHTH_NOTE },
+  { NOTE_F4, EIGHTH_NOTE },
+  { NOTE_G4, HALF_NOTE },
+  { NOTE_C5, QUARTER_NOTE },
+
+  { NOTE_D5, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_D4, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_C4,   EIGHTH_NOTE },
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_REST, EIGHTH_NOTE },
+  { NOTE_G4,   QUARTER_NOTE },
+  { NOTE_E4,   QUARTER_NOTE },
+
+  // Third stanza
+  { NOTE_A4,   HALF_NOTE },
+  { NOTE_A4,   EIGHTH_NOTE },
+  { NOTE_G4,   EIGHTH_NOTE },
+  { NOTE_F4,   EIGHTH_NOTE  },
+  { NOTE_REST, EIGHTH_NOTE },
+
+  { NOTE_F4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE /* technically 4 + 1 */  },
+  { NOTE_D4, EIGHTH_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+
+  { NOTE_E4, QUARTER_NOTE },
+  { NOTE_C4, HALF_NOTE /* half + 1 */ },
+
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_CS4, HALF_NOTE },
+  { NOTE_B3,  HALF_NOTE },
+
+  // Forth stanza
+  { NOTE_A4,   HALF_NOTE },
+  { NOTE_A4,   EIGHTH_NOTE },
+  { NOTE_G4,   EIGHTH_NOTE },
+  { NOTE_F4,   EIGHTH_NOTE  },
+  { NOTE_REST, EIGHTH_NOTE },
+
+  { NOTE_F4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE /* technically 4 + 1 */  },
+  { NOTE_D4, EIGHTH_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+
+  { NOTE_E4, QUARTER_NOTE },
+  { NOTE_C4, HALF_NOTE /* half + 1 */ },
+
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_D4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_CS4, HALF_NOTE },
+  { NOTE_B3,  HALF_NOTE },  
+
+  { NOTE_A4, WHOLE_NOTE },
+
+  // Fifth stanza
+  { NOTE_REST, QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE },
+  { NOTE_D4,   QUARTER_NOTE },
+  
+  { NOTE_E4, EIGHTH_NOTE },
+  { NOTE_F4, EIGHTH_NOTE },
+  { NOTE_G4, HALF_NOTE },
+  { NOTE_C5, QUARTER_NOTE },
+
+  { NOTE_D5, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_D4, HALF_NOTE },
+  { NOTE_G4, QUARTER_NOTE },
+  { NOTE_E4, QUARTER_NOTE },
+
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_C4,   EIGHTH_NOTE },
+  { NOTE_D4,   EIGHTH_NOTE },
+  { NOTE_REST, EIGHTH_NOTE },
+  { NOTE_G4,   QUARTER_NOTE },
+  { NOTE_E4,   QUARTER_NOTE },
+
+  { NOTE_D4, WHOLE_NOTE },
+
+  // Break.
+  { NOTE_REST, WHOLE_NOTE },
 };
+
 
 struct playButton {
   int pin;
@@ -77,8 +163,8 @@ playButton backwardButton = {
   4, 0
 };
 
+int totalNotes = sizeof(melody) / sizeof(beat);
 int currentNote = 0;
-int currentBeat = 0;
 bool play = false;
 
 void setup() {
@@ -90,15 +176,13 @@ void setup() {
   pinMode(playbackLED.bPin, OUTPUT);
 }
 
-void loop() {
-  // playbackLEDRed();
-  // playSingleBeat();
-  // playWholeMelody();
-
-
+void loop() { 
   if ( digitalRead(forwardButton.pin) == HIGH ) {
     play = true;
     playbackLEDGreen();
+
+    bool backwards = true;
+    currentNote = totalNotes - 1;
   } else if ( digitalRead(backwardButton.pin) == HIGH ) {
     play = false;
     playbackLEDRed();    
@@ -107,25 +191,15 @@ void loop() {
   }
 
   if ( play == true ) {
-    int totalNotes = sizeof(beats) / sizeof(int);    
-
     playbackLEDGreen();
-    playNote(melody[currentNote], beats[currentNote]);
-  
+    playNote(melody[currentNote].note, melody[currentNote].duration);
+
     currentNote++;
-    currentBeat++;
   
     if ( currentNote > ( totalNotes - 1) )
-      currentNote = 0;
-  
-    if (currentBeat > ( totalNotes  - 1 ) )
-      currentBeat = 0;
-  }  
+      currentNote = 0;   
+  }
 }
-
-
-
-
 
 void playbackLEDWhite() {
   analogWrite(playbackLED.rPin, 255);
@@ -151,58 +225,6 @@ void playbackLEDRed() {
   analogWrite(playbackLED.bPin, 0);  
 }
 
-void playSingleBeat() {
-  int totalNotes = sizeof(beats) / sizeof(int);    
-
-  if ( digitalRead(forwardButton.pin) == HIGH ) {
-    playNote(melody[currentNote], beats[currentNote]);
-
-    currentNote++;
-    currentBeat++;
-
-    if ( currentNote > ( totalNotes - 1) )
-      currentNote = 0;
-
-    if (currentBeat > ( totalNotes  - 1 ) )
-      currentBeat = 0;
-  }
-
-  if ( digitalRead(backwardButton.pin) == HIGH  ) {
-    playNote(melody[currentNote], beats[currentNote]); 
-    
-    currentNote--;
-    currentBeat--;
-    
-    if ( currentNote < 0 )
-      currentNote = (totalNotes - 1);
-
-    if ( currentBeat < 0 )
-      currentBeat = (totalNotes - 1);
-  }  
-}
-
-void playWholeMelody() {
-  if ( digitalRead(forwardButton.pin) == HIGH ) {
-    int totalNotes = sizeof(beats) / sizeof(int);    
-
-    playbackLEDGreen();
-    playMelody(melody, beats, totalNotes);
-  } else if ( digitalRead(backwardButton.pin) == HIGH ) {
-    int totalNotes = sizeof(beats) / sizeof(int);    
-
-    int reversedMelody[totalNotes];
-    int reversedBeats[totalNotes];
-
-    for (int i = 0; i < totalNotes; i++) {
-      reversedMelody[i] = melody[(totalNotes - 1) - i];
-      reversedBeats[i] = beats[(totalNotes - 1) - i];
-    }
-
-    playbackLEDBlue();
-    playMelody(reversedMelody, reversedBeats, totalNotes);
-  }  
-}
-
 void playNote(int note, int beat) {
   int noteDuration = 1000 / beat;
   int pauseBetweenNotes = noteDuration * 1.30;
@@ -210,10 +232,4 @@ void playNote(int note, int beat) {
   tone(8, note, noteDuration);
   delay(pauseBetweenNotes);
   noTone(8); 
-}
-
-void playMelody(int notes[], int beats[], int totalNotes) {
-  for (int thisNote = 0; thisNote < totalNotes; thisNote++) {
-    playNote(notes[thisNote], beats[thisNote]);
-  }
 }
