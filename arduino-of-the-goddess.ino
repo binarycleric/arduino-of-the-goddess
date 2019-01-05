@@ -1,20 +1,11 @@
 #include "notes.h"
-
-#define WHOLE_NOTE     1
-#define HALF_NOTE      2
-#define QUARTER_NOTE   4
-#define EIGHTH_NOTE    8
-
-struct beat {
-  int note;
-  int duration;
-};
+#include "beats.h"
 
 beat melody[] = {
   { NOTE_REST, QUARTER_NOTE },
   { NOTE_D4,   HALF_NOTE },
   { NOTE_D4,   QUARTER_NOTE },
-  
+
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
   { NOTE_G4, HALF_NOTE },
@@ -39,7 +30,7 @@ beat melody[] = {
   { NOTE_REST, QUARTER_NOTE },
   { NOTE_D4,   HALF_NOTE },
   { NOTE_D4,   QUARTER_NOTE },
-  
+
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
   { NOTE_G4, HALF_NOTE },
@@ -104,7 +95,7 @@ beat melody[] = {
   { NOTE_E4, QUARTER_NOTE },
 
   { NOTE_CS4, HALF_NOTE },
-  { NOTE_B3,  HALF_NOTE },  
+  { NOTE_B3,  HALF_NOTE },
 
   { NOTE_A4, WHOLE_NOTE },
 
@@ -112,7 +103,7 @@ beat melody[] = {
   { NOTE_REST, QUARTER_NOTE },
   { NOTE_D4,   HALF_NOTE },
   { NOTE_D4,   QUARTER_NOTE },
-  
+
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
   { NOTE_G4, HALF_NOTE },
@@ -160,12 +151,11 @@ playButton forwardButton = {
 };
 
 playButton backwardButton = {
-  4, 0
+  3, 0
 };
 
 int totalNotes = sizeof(melody) / sizeof(beat);
 int currentNote = 0;
-bool play = false;
 
 void setup() {
   pinMode(forwardButton.pin, INPUT);
@@ -174,62 +164,66 @@ void setup() {
   pinMode(playbackLED.rPin, OUTPUT);
   pinMode(playbackLED.gPin, OUTPUT);
   pinMode(playbackLED.bPin, OUTPUT);
+
+  attachInterrupt(digitalPinToInterrupt(3), stopMelody, CHANGE);
+}
+
+void stopMelody() {
+  forwardButton.state = 0;
+  stopNote();
 }
 
 void loop() { 
   if ( digitalRead(forwardButton.pin) == HIGH ) {
-    play = true;
-    playbackLEDGreen();
-
-    bool backwards = true;
-    currentNote = totalNotes - 1;
-  } else if ( digitalRead(backwardButton.pin) == HIGH ) {
-    play = false;
-    playbackLEDRed();    
-  } else {
-    playbackLEDRed();
+    forwardButton.state = 1;
   }
 
-  if ( play == true ) {
+  if ( forwardButton.state == 1 ) {
     playbackLEDGreen();
     playNote(melody[currentNote].note, melody[currentNote].duration);
 
     currentNote++;
-  
+
     if ( currentNote > ( totalNotes - 1) )
-      currentNote = 0;   
+      currentNote = 0;
+  } else {
+    playbackLEDRed();
   }
 }
 
 void playbackLEDWhite() {
   analogWrite(playbackLED.rPin, 255);
   analogWrite(playbackLED.gPin, 255);
-  analogWrite(playbackLED.bPin, 255);      
+  analogWrite(playbackLED.bPin, 255);
 }
 
 void playbackLEDGreen() {
   analogWrite(playbackLED.rPin, 0);
   analogWrite(playbackLED.gPin, 255);
-  analogWrite(playbackLED.bPin, 0);    
+  analogWrite(playbackLED.bPin, 0);
 }
 
 void playbackLEDBlue() {
   analogWrite(playbackLED.rPin, 0);
   analogWrite(playbackLED.gPin, 0);
-  analogWrite(playbackLED.bPin, 255);  
+  analogWrite(playbackLED.bPin, 255);
 }
 
 void playbackLEDRed() {
   analogWrite(playbackLED.rPin, 255);
   analogWrite(playbackLED.gPin, 0);
-  analogWrite(playbackLED.bPin, 0);  
+  analogWrite(playbackLED.bPin, 0);
+}
+
+void stopNote() {
+  noTone(8);
 }
 
 void playNote(int note, int beat) {
   int noteDuration = 1000 / beat;
   int pauseBetweenNotes = noteDuration * 1.30;
-  
+
   tone(8, note, noteDuration);
   delay(pauseBetweenNotes);
-  noTone(8); 
+  noTone(8);
 }
