@@ -130,7 +130,6 @@ beat melody[] = {
   { NOTE_REST, WHOLE_NOTE },
 };
 
-
 struct playButton {
   int pin;
   int state;
@@ -150,32 +149,29 @@ playButton forwardButton = {
   2, 0
 };
 
-playButton backwardButton = {
-  3, 0
-};
-
 int totalNotes = sizeof(melody) / sizeof(beat);
 int currentNote = 0;
 
 void setup() {
   pinMode(forwardButton.pin, INPUT);
-  pinMode(backwardButton.pin, INPUT);
 
   pinMode(playbackLED.rPin, OUTPUT);
   pinMode(playbackLED.gPin, OUTPUT);
   pinMode(playbackLED.bPin, OUTPUT);
 
-  attachInterrupt(digitalPinToInterrupt(3), stopMelody, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(3), stopMelody, HIGH);
 }
 
 void stopMelody() {
   forwardButton.state = 0;
+  playbackLEDRed();
   stopNote();
 }
 
 void loop() { 
   if ( digitalRead(forwardButton.pin) == HIGH ) {
     forwardButton.state = 1;
+    currentNote = totalNotes - 1;
   }
 
   if ( forwardButton.state == 1 ) {
@@ -184,8 +180,18 @@ void loop() {
 
     currentNote++;
 
-    if ( currentNote > ( totalNotes - 1) )
+    if ( currentNote > ( totalNotes - 1) ) {
       currentNote = 0;
+    }
+  } else if (forwardButton.state == -1 ) {
+    playbackLEDBlue();
+    playNote(melody[currentNote].note, melody[currentNote].duration);
+
+    currentNote--;
+
+    if ( currentNote == 0 ) {
+      currentNote = totalNotes -1;
+    }
   } else {
     playbackLEDRed();
   }
