@@ -3,8 +3,7 @@
 
 beat melody[] = {
   { NOTE_REST, QUARTER_NOTE },
-  { NOTE_D4,   HALF_NOTE },
-  { NOTE_D4,   QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE_TIE },
 
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
@@ -28,8 +27,7 @@ beat melody[] = {
 
   // Second stanza
   { NOTE_REST, QUARTER_NOTE },
-  { NOTE_D4,   HALF_NOTE },
-  { NOTE_D4,   QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE_TIE },
 
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
@@ -59,12 +57,12 @@ beat melody[] = {
   { NOTE_REST, EIGHTH_NOTE },
 
   { NOTE_F4, QUARTER_NOTE },
-  { NOTE_E4, QUARTER_NOTE /* technically 4 + 1 */  },
+  { NOTE_E4, QUARTER_NOTE_TIE },
   { NOTE_D4, EIGHTH_NOTE },
   { NOTE_G4, QUARTER_NOTE },
 
   { NOTE_E4, QUARTER_NOTE },
-  { NOTE_C4, HALF_NOTE /* half + 1 */ },
+  { NOTE_C4, HALF_NOTE_TIE },
 
   { NOTE_D4, QUARTER_NOTE },
   { NOTE_D4, QUARTER_NOTE },
@@ -82,12 +80,12 @@ beat melody[] = {
   { NOTE_REST, EIGHTH_NOTE },
 
   { NOTE_F4, QUARTER_NOTE },
-  { NOTE_E4, QUARTER_NOTE /* technically 4 + 1 */  },
+  { NOTE_E4, QUARTER_NOTE_TIE },
   { NOTE_D4, EIGHTH_NOTE },
   { NOTE_G4, QUARTER_NOTE },
 
   { NOTE_E4, QUARTER_NOTE },
-  { NOTE_C4, HALF_NOTE /* half + 1 */ },
+  { NOTE_C4, HALF_NOTE_TIE },
 
   { NOTE_D4, QUARTER_NOTE },
   { NOTE_D4, QUARTER_NOTE },
@@ -101,8 +99,7 @@ beat melody[] = {
 
   // Fifth stanza
   { NOTE_REST, QUARTER_NOTE },
-  { NOTE_D4,   HALF_NOTE },
-  { NOTE_D4,   QUARTER_NOTE },
+  { NOTE_D4,   HALF_NOTE_TIE },
 
   { NOTE_E4, EIGHTH_NOTE },
   { NOTE_F4, EIGHTH_NOTE },
@@ -151,6 +148,7 @@ playButton forwardButton = {
 
 int totalNotes = sizeof(melody) / sizeof(beat);
 int currentNote = 0;
+int speakerPin = 8;
 
 void setup() {
   pinMode(forwardButton.pin, INPUT);
@@ -171,7 +169,6 @@ void stopMelody() {
 void loop() { 
   if ( digitalRead(forwardButton.pin) == HIGH ) {
     forwardButton.state = 1;
-    currentNote = totalNotes - 1;
   }
 
   if ( forwardButton.state == 1 ) {
@@ -182,15 +179,6 @@ void loop() {
 
     if ( currentNote > ( totalNotes - 1) ) {
       currentNote = 0;
-    }
-  } else if (forwardButton.state == -1 ) {
-    playbackLEDBlue();
-    playNote(melody[currentNote].note, melody[currentNote].duration);
-
-    currentNote--;
-
-    if ( currentNote == 0 ) {
-      currentNote = totalNotes -1;
     }
   } else {
     playbackLEDRed();
@@ -222,14 +210,40 @@ void playbackLEDRed() {
 }
 
 void stopNote() {
-  noTone(8);
+  noTone(speakerPin);
+}
+
+int beatsPerMinute = 60;
+
+int noteDuration(int beat, int bpm) {
+  int duration;
+
+  if ( beat == WHOLE_NOTE ) {
+    duration = 1000;
+  } else if ( beat == HALF_NOTE_TIE ) {
+    duration = 750;
+  } else if ( beat == HALF_NOTE ) {
+    duration = 500;
+  } else if ( beat == QUARTER_NOTE_TIE ) {
+    duration = (250 + 125);
+  } else if ( beat == QUARTER_NOTE ) {
+    duration = 250;
+  } else if ( beat == EIGHTH_NOTE_TIE ) {
+    duration = 125 + 62; // ( 62.5 )
+  } else if ( beat == EIGHTH_NOTE ) {
+    duration = 125;    
+  } else {
+    // SHRUG. Raise an error.
+  }
+
+  return duration;
 }
 
 void playNote(int note, int beat) {
-  int noteDuration = 1000 / beat;
-  int pauseBetweenNotes = noteDuration * 1.30;
+  int duration = noteDuration(beat, 60);
+  int pauseBetweenNotes = duration * 1.30;
 
-  tone(8, note, noteDuration);
+  tone(speakerPin, note, duration);
   delay(pauseBetweenNotes);
-  noTone(8);
+  noTone(speakerPin);
 }
